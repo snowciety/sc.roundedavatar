@@ -1,0 +1,18 @@
+#
+# this is your module manifest and used by Titanium
+# during compilation, packaging, distribution, etc.
+#
+version: 0.1
+apiversion: 2
+description: Module for creating rounded avatars on Android
+author: Snowciety
+license: Apache Public License v2
+copyright: Copyright (c) 2013 by Snowciety
+
+
+# these should not be edited
+name: sc.roundedavatar
+moduleid: sc.roundedavatar
+guid: 537c72c9-ad62-49a7-bf27-cd7810ba0886
+platform: android
+minsdk: 3.1.1.GA

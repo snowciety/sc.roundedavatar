@@ -1,0 +1,8 @@
+titanium.sdk=/home/joe/.titanium
+titanium.os=linux
+titanium.version=3.1.1.GA
+android.sdk=/home/joe/android-sdk-linux
+
+titanium.platform=${titanium.sdk}/mobilesdk/${titanium.os}/${titanium.version}/android
+android.platform=${android.sdk}/platforms/android-10
+google.apis=${android.sdk}/add-ons/addon-google_apis-google-10
