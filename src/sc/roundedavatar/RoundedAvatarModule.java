@@ -31,6 +31,12 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 
 @Kroll.module(name="RoundedAvatar", id="sc.roundedavatar")
 public class RoundedAvatarModule extends KrollModule {
@@ -69,7 +75,7 @@ public class RoundedAvatarModule extends KrollModule {
 	 * @return			Bitmap as a Blob.
 	 */
 	@Kroll.method
-	public TiBlob getRoundedAvatar(String url, int width) { //, int height) {
+	public TiBlob getRoundedAvatar(String url, int width) {
 		debugMsg("getRoundedAvatar(" + url + ", " + Integer.toString(width) + ")");
 		if (width <= 0) {
 			throw new IllegalArgumentException("Parameter 'width' has to be greater than zero!");
@@ -77,33 +83,33 @@ public class RoundedAvatarModule extends KrollModule {
 		Bitmap bitmap = getBitmapFromURL(url);
 		if (width != bitmap.getWidth()) {
 			// Requested a different size than the bitmap's size
-			return roundBitmap(resizeBitmap(bitmap, width, width));
+			return getRoundedBitmapAsBlob(resizeBitmap(bitmap, width, width));
 		} else {
-			return roundBitmap(bitmap);
+			return getRoundedBitmapAsBlob(bitmap);
 		}
 	}
 	
-	/**
-	 * Returns a bitmap with rounded corners as a Blob. 
-	 * The bitmap's height and width are assumed to be equal.
-	 * @param bitmap	The bitmap to modify.
-	 * @return			Bitmap as a Blob.
-	 */
-	private TiBlob roundBitmap(Bitmap bitmap) {
-		if (bitmap != null) {
-			RoundedAvatarDrawable avatar = new RoundedAvatarDrawable(bitmap);
-	
-		    Bitmap out = Bitmap.createBitmap(avatar.getIntrinsicWidth(), avatar.getIntrinsicHeight(), Config.ARGB_8888);
-		    Canvas canvas = new Canvas(out); 
-		    avatar.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-		    avatar.draw(canvas);
-		    avatar = null;
-		    
-		    return TiBlob.blobFromImage(out);
-		} else {
-			return null;
-		}
-	}
+	private static TiBlob getRoundedBitmapAsBlob(Bitmap bitmap) {
+	    final Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+	    final Canvas canvas = new Canvas(output);
+	 
+	    final int color = Color.RED;
+	    final Paint paint = new Paint();
+	    final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+	    final RectF rectF = new RectF(rect);
+	 
+	    paint.setAntiAlias(true);
+	    canvas.drawARGB(0, 0, 0, 0);
+	    paint.setColor(color);
+	    canvas.drawOval(rectF, paint);
+	 
+	    paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+	    canvas.drawBitmap(bitmap, rect, rect, paint);
+	 
+	    bitmap.recycle();
+	 
+	    return TiBlob.blobFromImage(output);
+	  }
 
 	/**
 	 * Returns a Bitmap from a URL
