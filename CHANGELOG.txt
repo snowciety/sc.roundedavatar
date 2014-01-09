@@ -1,1 +1,2 @@
+v1.0 - Module does not download images anymore.
 v0.1 - Initial release

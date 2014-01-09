@@ -69,23 +69,22 @@ public class RoundedAvatarModule extends KrollModule {
 	
 	
 	/**
-	 * Returns a rounded bitmap from a bitmap at location url
-	 * @param url		The location of the original bitmap.
+	 * Returns a rounded bitmap from a bitmap passed as a blob from Titanium.
+	 * @param imageBlob	The image as a blob.
 	 * @param width		The requested width of the returned bitmap (which is also the height).
-	 * @return			Bitmap as a Blob.
+	 * @return			THe rounded image as a blob.
 	 */
 	@Kroll.method
-	public TiBlob getRoundedAvatar(String url, int width) {
-		debugMsg("getRoundedAvatar(" + url + ", " + Integer.toString(width) + ")");
+	public TiBlob getRoundedAvatar(TiBlob imageBlob, int width) {
 		if (width <= 0) {
 			throw new IllegalArgumentException("Parameter 'width' has to be greater than zero!");
 		}
-		Bitmap bitmap = getBitmapFromURL(url);
-		if (width != bitmap.getWidth()) {
-			// Requested a different size than the bitmap's size
-			return getRoundedBitmapAsBlob(resizeBitmap(bitmap, width, width));
+		debugMsg("Received blob with size "+Integer.toString(imageBlob.getBytes().length));
+		Bitmap image = BitmapFactory.decodeByteArray(imageBlob.getBytes(), 0, imageBlob.getBytes().length);
+		if (image != null) {
+			return getRoundedBitmapAsBlob(resizeBitmap(image, width, width));
 		} else {
-			return getRoundedBitmapAsBlob(bitmap);
+			throw new IllegalArgumentException("The passed blob could not be converted to a bitmap!");
 		}
 	}
 	
@@ -110,36 +109,16 @@ public class RoundedAvatarModule extends KrollModule {
 	 
 	    return TiBlob.blobFromImage(output);
 	  }
-
-	/**
-	 * Returns a Bitmap from a URL
-	 * @param src	The source URL
-	 * @return	the fetched Bitmap
-	 */
-	private static Bitmap getBitmapFromURL(String src) {
-	    try {
-	        URL url = new URL(src);
-	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	        connection.setDoInput(true);
-	        connection.connect();
-	        InputStream input = connection.getInputStream();
-	        Bitmap myBitmap = BitmapFactory.decodeStream(input);
-	        return myBitmap;
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	        return null;
-	    }
-	}
 	
 	/**
 	 * Resizes a bitmap to a specified size.
-	 * @param src		The bitmap to resize.
+	 * @param bitmap	The bitmap to resize.
 	 * @param width		new width.
 	 * @param height	new height.
 	 * @return			a new Bitmap with of the specified size.
 	 */
-	private static Bitmap resizeBitmap(Bitmap src, int width, int height) {
-		return Bitmap.createScaledBitmap(src, width, height, false);
+	private static Bitmap resizeBitmap(Bitmap bitmap, int width, int height) {
+		return Bitmap.createScaledBitmap(bitmap, width, height, false);
 	}
 
 }
